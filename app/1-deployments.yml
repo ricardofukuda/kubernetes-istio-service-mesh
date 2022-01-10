@@ -1,0 +1,217 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graphql
+  namespace: app
+  labels:
+    app: graphql
+    version: "v1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: graphql
+      version: "v1"
+  template:
+    metadata:
+      labels:
+        app: graphql
+        version: "v1"
+    spec:
+      containers:
+      - name: graphql
+        image: app:latest
+        ports:
+        - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 120
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 120
+        env:
+        - name: FROM
+          value: "graphql"
+        - name: TARGET
+          value: "sales,payment"
+        imagePullPolicy: Never
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graphql2
+  namespace: app
+  labels:
+    app: graphql2
+    version: "v2"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: graphql
+      version: "v2"
+  template:
+    metadata:
+      labels:
+        app: graphql
+        version: "v2"
+    spec:
+      containers:
+      - name: graphql
+        image: app:latest
+        ports:
+        - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 120
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 120
+        env:
+        - name: FROM
+          value: "graphql"
+        - name: TARGET
+          value: "sales,payment"
+        imagePullPolicy: Never
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales
+  namespace: app
+  labels:
+    app: sales
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sales
+  template:
+    metadata:
+      labels:
+        app: sales
+    spec:
+      containers:
+      - name: backend
+        image: app:latest
+        ports:
+        - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 60
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 60
+        env:
+        - name: FROM
+          value: "sales"
+        - name: TARGET
+          value: "customer,payment"
+        imagePullPolicy: Never
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment
+  namespace: app
+  labels:
+    app: payment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment
+  template:
+    metadata:
+      labels:
+        app: payment
+    spec:
+      containers:
+      - name: backend
+        image: app:latest
+        ports:
+        - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 60
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 60
+        env:
+        - name: FROM
+          value: "payment"
+        - name: TARGET
+          value: ""
+        imagePullPolicy: Never
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer
+  namespace: app
+  labels:
+    app: customer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: customer
+  template:
+    metadata:
+      labels:
+        app: customer
+    spec:
+      containers:
+      - name: backend
+        image: app:latest
+        ports:
+        - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 60
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 60
+        env:
+        - name: FROM
+          value: "customer"
+        - name: TARGET
+          value: ""
+        imagePullPolicy: Never

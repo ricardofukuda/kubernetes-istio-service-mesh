@@ -1,0 +1,73 @@
+# A VirtualService defines a set of traffic routing rules to apply when a host is addressed.
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: graphql
+  namespace: app
+spec:
+  hosts:
+  - graphql.local # domain name
+  gateways:
+  - app-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    # several destination rules with weight is implementing a canary deployment.
+    - destination:
+        host: graphql # interpreted as graphql.app.svc.cluster.local
+        port:
+          number: 3000
+        subset: "a1" # name defined in the destination rule
+      weight: 30 # split percent of the traffic
+    - destination:
+        host: graphql # interpreted as graphql.app.svc.cluster.local
+        port:
+          number: 3000
+        subset: "a2"
+      weight: 70
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: sales
+  namespace: app
+spec:
+  hosts:
+  -   sales.local
+  gateways:
+  - app-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: sales
+        port:
+          number: 3000
+---
+
+# Destination indicates the network addressable Service to which the request/connection will be sent after processing a traffic routing rule (from VirtualService).
+# The destination.host should unambiguously refer to a service in the Istio’s service registry.
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: graphql-destination
+  namespace: app
+spec:
+  host: graphql  # interpreted as graphql.app.svc.cluster.local
+  trafficPolicy:
+    loadBalancer: # Using sticky session
+      consistentHash:
+        httpHeaderName: "x-myheader"
+  subsets:
+  - name: "a1"
+    labels:
+      version: "v1" # Pod version label selector
+  - name: "a2"
+    labels:
+      version: "v2" # Pod version label selector

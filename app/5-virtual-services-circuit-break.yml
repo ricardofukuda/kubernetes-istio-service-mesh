@@ -1,0 +1,43 @@
+# A VirtualService defines a set of traffic routing rules to apply when a host is addressed.
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: graphql 
+  namespace: app
+spec:
+  hosts:
+  - graphql.local # domain name
+  gateways:
+  - app-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: graphql # interpreted as graphql.app.svc.cluster.local
+        port:
+          number: 3000
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: circuit-breaker-payment-service
+spec:
+  host: payment # interpreted as payment.app.svc.cluster.local
+  trafficPolicy:
+    outlierDetection: #enable circuit breaker
+      consecutive5xxErrors: 1
+      interval: 30s
+      baseEjectionTime: 3m
+      maxEjectionPercent: 100
+      minHealthPercent: 100
+    connectionPool:
+      tcp:
+        maxConnections: 1
+      http:
+        http1MaxPendingRequests: 1
+        http2MaxRequests: 1
+        maxRequestsPerConnection: 1

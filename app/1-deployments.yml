@@ -28,13 +28,20 @@ spec:
             path: /health
             port: 3000
           initialDelaySeconds: 15
-          periodSeconds: 120
+          periodSeconds: 110
         readinessProbe:
           httpGet:
             path: /health
             port: 3000
           initialDelaySeconds: 15
-          periodSeconds: 120
+          periodSeconds: 110
+        resources:
+          requests:
+            memory: "12Mi"
+            cpu: "10m"
+          limits:
+            memory: "64Mi"
+            cpu: "20m"
         env:
         - name: FROM
           value: "graphql"
@@ -43,53 +50,53 @@ spec:
         imagePullPolicy: Never
 
 ---
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: graphql2
-  namespace: app
-  labels:
-    app: graphql2
-    version: "v2"
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: graphql
-      version: "v2"
-  template:
-    metadata:
-      labels:
-        app: graphql
-        version: "v2"
-    spec:
-      containers:
-      - name: graphql
-        image: app:latest
-        ports:
-        - containerPort: 3000
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-          initialDelaySeconds: 15
-          periodSeconds: 120
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-          initialDelaySeconds: 15
-          periodSeconds: 120
-        env:
-        - name: FROM
-          value: "graphql"
-        - name: TARGET
-          value: "sales,payment"
-        imagePullPolicy: Never
-
-
----
+#
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: graphql2
+#  namespace: app
+#  labels:
+#    app: graphql2
+#    version: "v2"
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: graphql
+#      version: "v2"
+#  template:
+#    metadata:
+#      labels:
+#        app: graphql
+#        version: "v2"
+#    spec:
+#      containers:
+#      - name: graphql
+#        image: app:latest
+#        ports:
+#        - containerPort: 3000
+#        livenessProbe:
+#          httpGet:
+#            path: /health
+#            port: 3000
+#          initialDelaySeconds: 15
+#          periodSeconds: 110
+#        readinessProbe:
+#          httpGet:
+#            path: /health
+#            port: 3000
+#          initialDelaySeconds: 15
+#          periodSeconds: 110
+#        env:
+#        - name: FROM
+#          value: "graphql"
+#        - name: TARGET
+#          value: "sales,payment"
+#        imagePullPolicy: Never
+#
+#
+#---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -117,13 +124,13 @@ spec:
             path: /health
             port: 3000
           initialDelaySeconds: 15
-          periodSeconds: 60
+          periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /health
             port: 3000
           initialDelaySeconds: 15
-          periodSeconds: 60
+          periodSeconds: 10
         env:
         - name: FROM
           value: "sales"
@@ -160,13 +167,13 @@ spec:
             path: /health
             port: 3000
           initialDelaySeconds: 15
-          periodSeconds: 60
+          periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /health
             port: 3000
           initialDelaySeconds: 15
-          periodSeconds: 60
+          periodSeconds: 10
         env:
         - name: FROM
           value: "payment"
@@ -202,13 +209,13 @@ spec:
             path: /health
             port: 3000
           initialDelaySeconds: 15
-          periodSeconds: 60
+          periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /health
             port: 3000
           initialDelaySeconds: 15
-          periodSeconds: 60
+          periodSeconds: 10
         env:
         - name: FROM
           value: "customer"

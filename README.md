@@ -33,6 +33,7 @@ istioctl analyze --namespace app
 
 https://istio.io/latest/docs/tasks/observability/kiali/
 
+*helm install --namespace istio-system --set auth.strategy="anonymous" --repo https://kiali.org/helm-charts --version 1.45.0 kiali-server kiali-server*
 *istioctl dashboard kiali*
 
 **7 - Installing jaeger:**
